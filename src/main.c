@@ -23,20 +23,17 @@ int main() {
 			printf("%02x ", buffer[i]);
 			if(buffer[i] >= 0x20 && buffer[i] <= 0x7E) ascii[i] = (char)buffer[i];
 			else ascii[i] = '.';
-			
  		}
 		ascii[read] = '\0';
-
-		if(read < 16) { 
-			for(size_t i = 0; i < read; i++){
-				printf("   ");
-			}
-			printf("|%s|\n",ascii);
-			break;
+ 
+		for(size_t i = read; i < 16; i++){
+			printf("   ");
 		}
 
 		printf("|%s|\n",ascii);
-		
+
+		if(read < 16) break;
+
 		offset += read;
 	}
 	fclose(f);
