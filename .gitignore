@@ -1,5 +1,8 @@
 *.o
+*.txt
 compile_commands.json
 .cache/
 .clangd/
 hexdump
+teste
+teste.c
