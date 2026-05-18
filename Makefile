@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra -std=c11
+CFLAGS := -Wall -Wextra -fsanitize=address -g
 TARGET := hexdump
 SRCDIR := src
 OBJS := $(SRCDIR)/main.o
