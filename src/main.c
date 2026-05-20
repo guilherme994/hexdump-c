@@ -19,9 +19,11 @@ int main(int argc, char* argv[]) {
 
 	while(1) {
 		size_t f_read = fread(buffer, 1, 16, f_bin);
-		if(f_read == 0) break;
-
-		printf("%08zx: ", offset);
+		if(f_read == 0) {
+			if(offset > 0) printf("%08zx\n", offset);
+			break;
+		}
+		printf("%08zx  ", offset);
 		
 		for(size_t i = 0; i < f_read; i++) {	
 			printf("%02x ", buffer[i]);
@@ -31,6 +33,7 @@ int main(int argc, char* argv[]) {
 			else { 
 				ascii[i] = '.';
 			}
+			if(i == 7) printf(" ");
  		}
 		ascii[f_read] = '\0';
  
@@ -38,7 +41,7 @@ int main(int argc, char* argv[]) {
 			printf("   ");
 		}
 
-		printf("|%s|\n",ascii);
+		printf(" |%s|\n",ascii);
 
 		if(f_read < 16) break;
 
