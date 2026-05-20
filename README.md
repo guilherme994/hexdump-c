@@ -1,17 +1,17 @@
 # hexdump-c
 
-hexdump é uma ferramenta de linha de comando que mostra o conteúdo bruto de um arquivo. Ele simplesmente mostra os bytes — em hexadecimal — e, ao lado, qual caractere ASCII cada byte representa (quando representa um caractere imprimível).
+hexdump é uma ferramenta de linha de comando que mostra o conteúdo bruto de um arquivo. Ele simplesmente mostra os bytes — em hexadecimal — e, ao lado, qual caractere ASCII cada byte representa (quando representa um caractere imprimível). Esta versão foi inspirada no `hexdump -C`.
 
 ## Demonstração
 
 ```
 $ ./hexdump <NOME_ARQUIVO.bin>
-00000000: 7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 |.ELF............|
-00000010: 03 00 3e 00 01 00 00 00 00 11 00 00 00 00 00 00 |..>.............|
-00000020: 40 00 00 00 00 00 00 00 38 47 00 00 00 00 00 00 |@.......8G......|
-00000030: 00 00 00 00 40 00 38 00 0f 00 40 00 27 00 26 00 |....@.8...@.'.&.|
-00000040: 06 00 00 00 04 00 00 00 40 00 00 00 00 00 00 00 |........@.......|
-00000050: 40 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00 |@.......@.......|
+00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
+00000010  03 00 3e 00 01 00 00 00  00 11 00 00 00 00 00 00  |..>.............|
+00000020  40 00 00 00 00 00 00 00  38 47 00 00 00 00 00 00  |@.......8G......|
+00000030  00 00 00 00 40 00 38 00  0f 00 40 00 27 00 26 00  |....@.8...@.'.&.|
+00000040  06 00 00 00 04 00 00 00  40 00 00 00 00 00 00 00  |........@.......|
+00000050  40 00 00 00 00 00 00 00  40 00 00 00 00 00 00 00  |@.......@.......|
 ```
 
 ## Build
@@ -41,12 +41,12 @@ hexdump-c/
 
 ## Limitações conhecidas
 
--
+- Não implementa "squeeze mode" (substituição de linhas idênticas repetidas por `*`),
+  como faz o `hexdump -C` original. Cada linha do arquivo é sempre impressa.
 -
 
 ## Próximos passos possíveis
 
-Implementar os comandos:
-
 - `-n N` — lê só os primeiros N bytes
-- `-s OFFSET` — começa do offset.
+- `-s OFFSET` — começa do offset
+- `-v squeeze mode` — substituição de linhas idênticas repetidas por `*`)
