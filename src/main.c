@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <unistd.h>
 
 int main(int argc, char* argv[]) {
 	FILE* f_bin;
@@ -12,13 +13,32 @@ int main(int argc, char* argv[]) {
 		perror("fopen");
 		return 1;
 	}
-	
+	int n_flag = 0;
+	int n_bytes = 0;
 	size_t offset = 0;
 	uint8_t buffer[16];
 	char ascii[17];
 
+	int opt = getopt(argc, argv, "nsv:");
+
+	printf("%d\n",argc);
+
+	while(opt != -1){
+
+		switch (opt) {
+			case 'n':
+				break;
+
+			case 's':
+				break;
+
+			case 'v':
+				break;
+		}
+	}
+
 	while(1) {
-		size_t f_read = fread(buffer, 1, 16, f_bin);
+		size_t f_read = fread(buffer, 1, n_flag ? n_bytes : 16, f_bin);
 		if(f_read == 0) {
 			if(offset > 0) printf("%08zx\n", offset);
 			break;
