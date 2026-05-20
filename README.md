@@ -49,4 +49,4 @@ hexdump-c/
 
 - `-n N` — lê só os primeiros N bytes
 - `-s OFFSET` — começa do offset
-- `-v squeeze mode` — substituição de linhas idênticas repetidas por `*`)
+- `-v squeeze mode` — substituição de linhas idênticas repetidas por `*`
