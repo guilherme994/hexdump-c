@@ -5,7 +5,7 @@ hexdump é uma ferramenta de linha de comando que mostra o conteúdo bruto de um
 ## Demonstração
 
 ```
-$ ./hexdump <NOME_ARQUIVO.bin>
+$ ./hexdump [arquivo]
 00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
 00000010  03 00 3e 00 01 00 00 00  00 11 00 00 00 00 00 00  |..>.............|
 00000020  40 00 00 00 00 00 00 00  38 47 00 00 00 00 00 00  |@.......8G......|
