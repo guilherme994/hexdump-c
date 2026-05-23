@@ -5,7 +5,7 @@ hexdump é uma ferramenta de linha de comando que mostra o conteúdo bruto de um
 ## Demonstração
 
 ```
-$ ./hexdump [arquivo]
+$ ./hexdump /bin/ls | head -6
 00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
 00000010  03 00 3e 00 01 00 00 00  00 11 00 00 00 00 00 00  |..>.............|
 00000020  40 00 00 00 00 00 00 00  38 47 00 00 00 00 00 00  |@.......8G......|
@@ -65,7 +65,9 @@ hexdump-c/
  
 - Não suporta arquivos > 2 GB devido ao uso de `long`.
 - Não implementa flags de formato customizado (`-e`, `-f` do `hexdump` original).
+- `-s` requer arquivo seekable; falha com erro em stdin (use `tail -c +N arquivo | ./hexdump` como alternativa).
+
 ## Próximos passos possíveis
 
-- Refatorar em módulos
-- Suporte a stdin com `-s`
+- Refatorar em módulos.
+- Suporte a stdin com `-s`.
