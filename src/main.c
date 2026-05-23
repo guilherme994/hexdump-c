@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 
 	bool n_flag = false;
 	bool s_flag = false;
-	bool v_flag = false;
+	bool c_flag = false;
 	
 	long int n_bytes = -1;
 	long int s_soffset = 0;
@@ -26,11 +26,11 @@ int main(int argc, char* argv[]) {
 	char *p_nbytes;
 
 	int opt;
-	bool squeeze = false;
+	bool equal = false;
 	size_t f_read_copy = 0;
 	bool first_print = true;
 
-	while((opt = getopt(argc, argv,"n:s:v"))!= -1){
+	while((opt = getopt(argc, argv,"n:s:c"))!= -1){
 		switch (opt) {
 			case 'n':
 				n_flag = true;
@@ -49,8 +49,11 @@ int main(int argc, char* argv[]) {
 					return 1;
 				}
 				break;
-			case 'v':
-				v_flag = true;
+			case 'c':
+				c_flag = true;
+				break;
+			default:
+				fprintf(stderr, "Use: %s [-n N] [-s OFFSET] [-c] [file]\n", argv[0]);
 				break;
 		}
 	}
@@ -77,10 +80,12 @@ int main(int argc, char* argv[]) {
 		}
 
 		size_t f_read = fread(buffer, 1, str_size, f_bin);
+		
+		memset(ascii, '.', 16);
 
-		int verbose = (f_read == 16 && f_read_copy == 16 && v_flag && memcmp(v_buffer, buffer, sizeof(buffer)) == 0 && !first_print);
+		int concise = (f_read == 16 && f_read_copy == 16 && c_flag && memcmp(v_buffer, buffer, sizeof(buffer)) == 0 && !first_print);
 
-		if(!verbose) {
+		if(!concise) {
 			if(f_read == 0 && !first_print) {
 				break;
 			}
@@ -111,18 +116,20 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 
-			squeeze = false;
+			equal = false;
 		}
-		else if (!squeeze) {
+		else if (!equal) {
 			printf("*\n");
-			squeeze = true;
+			equal = true;
 		}
 	
 		offset += f_read;
-		f_read_copy = f_read;
 		first_print = false;
 		
-		if(v_flag) memcpy(v_buffer, buffer, sizeof(buffer));
+		if(c_flag) {
+			memcpy(v_buffer, buffer, sizeof(buffer));
+			f_read_copy = f_read;
+		}
 		if(n_bytes > str_size) n_bytes -= str_size;
 	}
 
