@@ -1,21 +1,20 @@
-#include <features.h>
-#include <bits/getopt_core.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 int main(int argc, char* argv[]) {
 	FILE* f_bin;
 	
-	int n_flag = 0;
-	int s_flag = 0;
-	int v_flag = 0;
+	bool n_flag = false;
+	bool s_flag = false;
+	bool v_flag = false;
 	
-	int n_bytes = 0;
-	int s_soffset = 0;
+	long int n_bytes = 0;
+	long int s_soffset = 0;
 	size_t offset = 0;
 	
 	uint8_t buffer[16];
@@ -27,14 +26,14 @@ int main(int argc, char* argv[]) {
 	char *p_nbytes;
 
 	int opt;
-	int squeeze = 0;
+	bool squeeze = false;
 	size_t f_read_copy = 0;
-	int first_print = 1;
+	bool first_print = true;
 
 	while((opt = getopt(argc, argv,"n:s:v"))!= -1){
 		switch (opt) {
 			case 'n':
-				n_flag = 1;
+				n_flag = true;
 				n_bytes = strtol(optarg, &p_nbytes, 10);
 				if(optarg == p_nbytes) {
 					printf("Invalid value for -n\n");
@@ -42,7 +41,7 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 			case 's':
-				s_flag = 1;
+				s_flag = true;
 				s_soffset = strtol(optarg, &p_soffset, 10);
 				if(optarg == p_soffset) {
 					printf("Invalid value for -s\n");
@@ -50,7 +49,7 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 			case 'v':
-				v_flag = 1;
+				v_flag = true;
 				break;
 		}
 	}
@@ -67,7 +66,7 @@ int main(int argc, char* argv[]) {
 
 	while(1) {
 		int str_size = 16;
-		if(n_flag == 1 || n_bytes > 16) {
+		if(n_flag || n_bytes > 16) {
 			if(n_bytes < str_size) str_size = n_bytes;
 		}
 
@@ -77,10 +76,10 @@ int main(int argc, char* argv[]) {
 
 		if(!verbose) {
 			if(f_read == 0 && !first_print) {
-				printf("%08zx\n", (offset + f_read + (s_flag ? s_soffset : 0)));
+				printf("%08lx\n", (offset + f_read + (s_flag ? s_soffset : 0)));
 				break;
 			}
-			printf("%08zx  ", offset);
+			printf("%08lx  ", offset);
 		
 			for(size_t i = 0; i < f_read; i++) {	
 				printf("%02x ", buffer[i]);
@@ -103,20 +102,20 @@ int main(int argc, char* argv[]) {
 			printf(" |%s|\n",ascii);
 			
 			if(f_read < 16) {
-				printf("%08zx\n", (offset + f_read + (s_flag ? s_soffset : 0)));
+				printf("%08lx\n", (offset + f_read + (s_flag ? s_soffset : 0)));
 				break;
 			}
 
-			squeeze = 0;
+			squeeze = false;
 		}
 		else if (!squeeze) {
 			printf("*\n");
-			squeeze = 1;
+			squeeze = true;
 		}
 	
 		offset += f_read;
 		f_read_copy = f_read;
-		first_print = 0;
+		first_print = false;
 		
 		if(v_flag) memcpy(v_buffer, buffer, sizeof(buffer));
 		if(n_bytes > str_size) n_bytes -= str_size;
