@@ -8,7 +8,7 @@
 
 int main(int argc, char* argv[]) {
 	FILE* f_bin;
-	
+
 	bool n_flag = false;
 	bool s_flag = false;
 	bool v_flag = false;
@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
 			case 's':
 				s_flag = true;
 				s_soffset = strtol(optarg, &p_soffset, 10);
+				offset += s_soffset;
 				if(optarg == p_soffset) {
 					fprintf(stderr, "Invalid value for -s\n");
 					return 1;
@@ -64,13 +65,11 @@ int main(int argc, char* argv[]) {
 
 	if(s_flag && fseek(f_bin, s_soffset, SEEK_SET) != 0) {
 		fprintf(stderr, "%s: -s ignored with stdin (non-seekable stream).\n", argv[0]);
+		offset = 0;
 	}
 
 	while(1) {
 		int str_size = 16;
-//		if(n_flag || n_bytes > 16) {
-//			if(n_bytes < str_size) str_size = n_bytes;
-//		}
 
 		if(n_flag) {
 			if(n_bytes == 0) break;
@@ -83,7 +82,6 @@ int main(int argc, char* argv[]) {
 
 		if(!verbose) {
 			if(f_read == 0 && !first_print) {
-				printf("%08lx\n", (offset + f_read + (s_flag ? s_soffset : 0)));
 				break;
 			}
 			printf("%08lx  ", offset);
@@ -109,7 +107,7 @@ int main(int argc, char* argv[]) {
 			printf(" |%s|\n",ascii);
 			
 			if(f_read < 16) {
-				printf("%08lx\n", (offset + f_read + (s_flag ? s_soffset : 0)));
+				offset += f_read;
 				break;
 			}
 
@@ -128,6 +126,8 @@ int main(int argc, char* argv[]) {
 		if(n_bytes > str_size) n_bytes -= str_size;
 	}
 
+	printf("%08lx\n", offset);
+	
 	if(f_bin != stdin) { 
 		fclose(f_bin);
 	}
