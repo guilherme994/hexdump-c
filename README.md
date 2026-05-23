@@ -22,6 +22,11 @@ Requer `gcc` e `make`. Testado em Linux (Arch via WSL2).
 make           # compila e gera ./hexdump
 make clean     # remove .o e binário
 ```
+## Uso
+
+``` 
+$ ./hexdump [-n N] [-s OFFSET] [-c] [arquivo]
+```
 
 ## Estrutura
 
@@ -33,20 +38,34 @@ hexdump-c/
 └── src/
     └── main.c
 ```
+## Flags suportadas
+
+| Flag         | Argumento | Descrição                                              |
+|--------------|-----------|--------------------------------------------------------|
+| `-n N`       | inteiro   | Limita a leitura aos primeiros `N` bytes.              |
+| `-s OFFSET`  | inteiro   | Pula `OFFSET` bytes do início do arquivo.              |
+| `-c`         | —         | Ativa modo conciso (substitui linhas idênticas por `*`). |
+
+## Exemplos
+
+| Comando                                    | O que faz                                          |
+|--------------------------------------------|----------------------------------------------------|
+| `./hexdump arquivo.bin`                    | Dump completo do arquivo.                          |
+| `./hexdump -n 64 arquivo.bin`              | Lê só os primeiros 64 bytes.                       |
+| `./hexdump -s 256 arquivo.bin`             | Começa do byte 256.                                |
+| `./hexdump -s 100 -n 32 arquivo.bin`       | Lê 32 bytes a partir do offset 100.                |
+| `./hexdump -c arquivo.bin`                 | Modo conciso (linhas repetidas viram `*`).         |
 
 ## Decisões de design
 
--
--
+- Uso de `hexdump -C` como referência, não `xxd`.
+- Implementei `-c` em vez de `-v` para ativar squeeze (oposto do `hexdump -C` real).
 
 ## Limitações conhecidas
-
-- Não implementa "squeeze mode" (substituição de linhas idênticas repetidas por `*`),
-  como faz o `hexdump -C` original. Cada linha do arquivo é sempre impressa.
--
-
+ 
+- Não suporta arquivos > 2 GB devido ao uso de `long`.
+- Não implementa flags de formato customizado (`-e`, `-f` do `hexdump` original).
 ## Próximos passos possíveis
 
-- `-n N` — lê só os primeiros N bytes
-- `-s OFFSET` — começa do offset
-- `-v squeeze mode` — substituição de linhas idênticas repetidas por `*`
+- Refatorar em módulos
+- Suporte a stdin com `-s`
