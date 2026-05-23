@@ -9,8 +9,6 @@
 int main(int argc, char* argv[]) {
 	FILE* f_bin;
 
-	bool n_flag = false;
-	bool s_flag = false;
 	bool c_flag = false;
 	
 	long int n_bytes = -1;
@@ -33,7 +31,6 @@ int main(int argc, char* argv[]) {
 	while((opt = getopt(argc, argv,"n:s:c"))!= -1){
 		switch (opt) {
 			case 'n':
-				n_flag = true;
 				n_bytes = strtol(optarg, &p_nbytes, 10);
 				if(optarg == p_nbytes) {
 					fprintf(stderr, "Invalid value for -n\n");
@@ -41,20 +38,19 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 			case 's':
-				s_flag = true;
 				s_soffset = strtol(optarg, &p_soffset, 10);
-				offset += s_soffset;
 				if(optarg == p_soffset) {
 					fprintf(stderr, "Invalid value for -s\n");
 					return 1;
 				}
+				offset += s_soffset;
 				break;
 			case 'c':
 				c_flag = true;
 				break;
 			default:
-				fprintf(stderr, "Use: %s [-n N] [-s OFFSET] [-c] [file]\n", argv[0]);
-				break;
+				fprintf(stderr, "Usage: %s [-n N] [-s OFFSET] [-c] [file]\n", argv[0]);
+				return 1;
 		}
 	}
 
@@ -66,15 +62,15 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	if(s_flag && fseek(f_bin, s_soffset, SEEK_SET) != 0) {
+	if(s_soffset > 0 && fseek(f_bin, s_soffset, SEEK_SET) != 0) {
 		fprintf(stderr, "%s: -s ignored with stdin (non-seekable stream).\n", argv[0]);
-		offset = 0;
+		return 1;
 	}
 
 	while(1) {
 		int str_size = 16;
 
-		if(n_flag) {
+		if(n_bytes >= 0) {
 			if(n_bytes == 0) break;
 			if(n_bytes < str_size) str_size = n_bytes;
 		}
@@ -83,13 +79,13 @@ int main(int argc, char* argv[]) {
 		
 		memset(ascii, '.', 16);
 
-		int concise = (f_read == 16 && f_read_copy == 16 && c_flag && memcmp(v_buffer, buffer, sizeof(buffer)) == 0 && !first_print);
+		bool concise = (f_read == 16 && f_read_copy == 16 && c_flag && memcmp(v_buffer, buffer, sizeof(buffer)) == 0 && !first_print);
 
 		if(!concise) {
 			if(f_read == 0 && !first_print) {
 				break;
 			}
-			printf("%08lx  ", offset);
+			printf("%08zx  ", offset);
 		
 			for(size_t i = 0; i < f_read; i++) {	
 				printf("%02x ", buffer[i]);
@@ -101,7 +97,8 @@ int main(int argc, char* argv[]) {
 				}
 				if(i == 7) printf(" ");
  			}
-		
+			/* Se a linha tem menos de 8 bytes, o loop nao imprimiu o espaço duplo do meio
+			   - compensa aqui para manter alinhamento da coluna ASCII*/
 			if(f_read < 8) printf(" ");
 			
 			for(size_t i = f_read; i < 16; i++){
@@ -130,10 +127,10 @@ int main(int argc, char* argv[]) {
 			memcpy(v_buffer, buffer, sizeof(buffer));
 			f_read_copy = f_read;
 		}
-		if(n_bytes > str_size) n_bytes -= str_size;
+		if(n_bytes >= (long)f_read) n_bytes -= (long)f_read;
 	}
 
-	printf("%08lx\n", offset);
+	printf("%08zx\n", offset);
 	
 	if(f_bin != stdin) { 
 		fclose(f_bin);
