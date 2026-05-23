@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	if(argc < 2) f_bin = stdin;
+	if(optind >= argc) f_bin = stdin;
 	else f_bin = fopen(argv[optind], "rb");
 
 	if(f_bin == NULL) {
@@ -62,7 +62,9 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	if(s_flag) fseek(f_bin, s_soffset, SEEK_SET);
+	if(s_flag && fseek(f_bin, s_soffset, SEEK_SET) != 0) {
+		fprintf(stderr, "%s: -s ignored with stdin (non-seekable stream).\n", argv[0]);
+	}
 
 	while(1) {
 		int str_size = 16;
