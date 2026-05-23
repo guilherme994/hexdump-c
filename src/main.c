@@ -15,13 +15,10 @@ int main(int argc, char* argv[]) {
 	long int s_soffset = 0;
 	size_t offset = 0;
 	
-	uint8_t buffer[16];
-	uint8_t v_buffer[16];
+	uint8_t buffer[16] = {0};
+	uint8_t v_buffer[16] = {0};
 
 	char ascii[17];
-
-	char *p_soffset;
-	char *p_nbytes;
 
 	int opt;
 	bool equal = false;
@@ -30,21 +27,25 @@ int main(int argc, char* argv[]) {
 
 	while((opt = getopt(argc, argv,"n:s:c"))!= -1){
 		switch (opt) {
-			case 'n':
+			case 'n': {
+				char *p_nbytes;
 				n_bytes = strtol(optarg, &p_nbytes, 10);
 				if(optarg == p_nbytes) {
-					fprintf(stderr, "Invalid value for -n\n");
+					fprintf(stderr, "%s: Invalid value for -n\n",argv[0]);
 					return 1;
 				}
 				break;
-			case 's':
+			}
+			case 's': {
+				char *p_soffset;
 				s_soffset = strtol(optarg, &p_soffset, 10);
 				if(optarg == p_soffset) {
-					fprintf(stderr, "Invalid value for -s\n");
+					fprintf(stderr, "%s: Invalid value for -s\n", argv[0]);
 					return 1;
 				}
 				offset += s_soffset;
 				break;
+			}
 			case 'c':
 				c_flag = true;
 				break;
@@ -63,16 +64,16 @@ int main(int argc, char* argv[]) {
 	}
 
 	if(s_soffset > 0 && fseek(f_bin, s_soffset, SEEK_SET) != 0) {
-		fprintf(stderr, "%s: -s ignored with stdin (non-seekable stream).\n", argv[0]);
+		fprintf(stderr, "%s: -s requires a seekable file (not stdin).\n", argv[0]);
 		return 1;
 	}
 
 	while(1) {
-		int str_size = 16;
+		size_t str_size = 16;
 
 		if(n_bytes >= 0) {
 			if(n_bytes == 0) break;
-			if(n_bytes < str_size) str_size = n_bytes;
+			if(n_bytes < (long)str_size) str_size = (size_t)n_bytes;
 		}
 
 		size_t f_read = fread(buffer, 1, str_size, f_bin);
