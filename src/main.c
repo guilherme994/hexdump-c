@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 	bool s_flag = false;
 	bool v_flag = false;
 	
-	long int n_bytes = 0;
+	long int n_bytes = -1;
 	long int s_soffset = 0;
 	size_t offset = 0;
 	
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 				n_flag = true;
 				n_bytes = strtol(optarg, &p_nbytes, 10);
 				if(optarg == p_nbytes) {
-					printf("Invalid value for -n\n");
+					fprintf(stderr, "Invalid value for -n\n");
 					return 1;
 				}
 				break;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 				s_flag = true;
 				s_soffset = strtol(optarg, &p_soffset, 10);
 				if(optarg == p_soffset) {
-					printf("Invalid value for -s\n");
+					fprintf(stderr, "Invalid value for -s\n");
 					return 1;
 				}
 				break;
@@ -68,7 +68,12 @@ int main(int argc, char* argv[]) {
 
 	while(1) {
 		int str_size = 16;
-		if(n_flag || n_bytes > 16) {
+//		if(n_flag || n_bytes > 16) {
+//			if(n_bytes < str_size) str_size = n_bytes;
+//		}
+
+		if(n_flag) {
+			if(n_bytes == 0) break;
 			if(n_bytes < str_size) str_size = n_bytes;
 		}
 
